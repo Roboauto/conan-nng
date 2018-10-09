@@ -19,8 +19,6 @@ class NngConan(ConanFile):
     source_subfolder = "source_subfolder"
     options = {
         "shared": [True, False],
-#       "enable_doc": [True, False],
-#       "enable_getaddrinfo_a": [True, False],
        "enable_tests": [True, False],
        "enable_tools": [True, False],
        "enable_nngcat": [True, False],
@@ -28,11 +26,9 @@ class NngConan(ConanFile):
 
     default_options = (
         "shared=False",
-#        "enable_doc=False",
-#        "enable_getaddrinfo_a=True",
         "enable_tests=False",
-        "enable_tools=True",
-        "enable_nngcat=True"
+        "enable_tools=False",
+        "enable_nngcat=False"
     )
 
     def source(self):
@@ -44,9 +40,6 @@ class NngConan(ConanFile):
 
     def build(self):
         cmake = CMake(self)
-        #cmake.definitions["NN_STATIC_LIB"] = not self.options.shared
-        #cmake.definitions["NN_ENABLE_DOC"] = self.options.enable_doc
-        #cmake.definitions["NN_ENABLE_GETADDRINFO_A"] = self.options.enable_getaddrinfo_a
         cmake.definitions["NNG_TESTS"] = self.options.enable_tests
         cmake.definitions["NNG_ENABLE_TOOLS"] = self.options.enable_tools
         cmake.definitions["NNG_ENABLE_NNGCAT"] = self.options.enable_nngcat
@@ -67,9 +60,6 @@ class NngConan(ConanFile):
 
     def package_info(self):
         self.cpp_info.libs = ["nng"]
-
-#        if not self.options.shared:
-#            self.cpp_info.defines.extend(["NN_STATIC_LIB=ON"])
 
         if self.settings.os == "Windows":
             if not self.options.shared:
