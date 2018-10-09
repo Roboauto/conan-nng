@@ -6,6 +6,8 @@ set(CMAKE_VERBOSE_MAKEFILE TRUE)
 include(${CMAKE_BINARY_DIR}/conanbuildinfo.cmake)
 conan_basic_setup()
 
+find_package(nng CONFIG REQUIRED)
+
 file(GLOB SOURCE_FILES *.c)
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})

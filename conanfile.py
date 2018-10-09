@@ -20,7 +20,7 @@ class NngConan(ConanFile):
     generators = "cmake"
     source_subfolder = "source_subfolder"
     options = {
-        "shared": [True, False],
+       "shared": [True, False],
        "enable_tests": [True, False],
        "enable_tools": [True, False],
        "enable_nngcat": [True, False],
@@ -45,7 +45,6 @@ class NngConan(ConanFile):
     def configure_cmake(self):
         cmake = CMake(self)
         cmake.definitions["NNG_TESTS"] = self.options.enable_tests
-        cmake.definitions["NNG_ENABLE_TOOLS"] = self.options.enable_tools
         cmake.definitions["NNG_ENABLE_NNGCAT"] = self.options.enable_nngcat
         cmake.configure()
         return cmake
@@ -69,3 +68,5 @@ class NngConan(ConanFile):
         elif self.settings.os == "Linux":
             #self.cpp_info.libs.append('anl')
             self.cpp_info.libs.append('pthread')
+        if not self.options.shared:
+            self.cpp_info.defines.append("NNG_STATIC_LIB")
