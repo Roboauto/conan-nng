@@ -8,7 +8,9 @@ import os
 class NngConan(ConanFile):
     name = "nng"
     version = "1.0.1"
-    url="https://github.com/gavinNL/conan-nng"
+    url = "https://github.com/gavinNL/conan-nng"
+    homepage = "https://github.com/nanomsg/nng"
+    author = "Gavin Wolf"
     description = "a socket library that provides several common communication patterns"
     license = "MIT"
     exports = ["LICENSE.md"]
@@ -32,34 +34,33 @@ class NngConan(ConanFile):
     )
 
     def source(self):
-        source_url = "https://github.com/nanomsg/nng"
-        tools.get("{0}/archive/v{1}.tar.gz".format(source_url, self.version))
+        tools.get("{0}/archive/v{1}.tar.gz".format(self.homepage, self.version))
         extracted_dir = self.name + "-" + self.version
         os.rename(extracted_dir, self.source_subfolder)
         #Rename to "sources" is a convention to simplify later steps
 
-    def build(self):
+    def configure(self):
+        del self.settings.compiler.libcxx
+
+    def configure_cmake(self):
         cmake = CMake(self)
         cmake.definitions["NNG_TESTS"] = self.options.enable_tests
         cmake.definitions["NNG_ENABLE_TOOLS"] = self.options.enable_tools
         cmake.definitions["NNG_ENABLE_NNGCAT"] = self.options.enable_nngcat
         cmake.configure()
+        return cmake
+
+    def build(self):
+        cmake = self.configure_cmake()
         cmake.build()
-        cmake.install()
 
     def package(self):
-        self.copy(pattern="LICENSE", dst="license", src=self.source_subfolder)
-        self.copy("*.h", dst="include", src="install/include")
-        self.copy("*.dll", dst="bin", src="install/bin")
-        self.copy("*.lib", dst="lib", src="install/lib")
-        self.copy("*.a", dst="lib", src="install/lib")
-        self.copy("*.so*", dst="lib", src="install/lib")
-        self.copy("*.dylib", dst="lib", src="install/lib")
-        self.copy("nngcat*", dst="bin", src="install/bin")
-        self.copy("*.*", dst="lib/pkgconfig", src="install/lib/pkgconfig")
+        self.copy(pattern="LICENSE.txt", dst="license", src=self.source_subfolder)
+        cmake = self.configure_cmake()
+        cmake.install()
 
     def package_info(self):
-        self.cpp_info.libs = ["nng"]
+        self.cpp_info.libs = tools.collect_libs(self)
 
         if self.settings.os == "Windows":
             if not self.options.shared:
@@ -68,4 +69,3 @@ class NngConan(ConanFile):
         elif self.settings.os == "Linux":
             #self.cpp_info.libs.append('anl')
             self.cpp_info.libs.append('pthread')
-            pass
