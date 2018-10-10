@@ -41,7 +41,7 @@ class NngConan(ConanFile):
 
     def configure(self):
         del self.settings.compiler.libcxx
-        if self.settings.compiler and float(self.settings.compiler.version) < 14 and tools.cross_building(self.settings):
+        if self.settings.compiler and float(self.settings.compiler.version.value) < 14 and tools.cross_building(self.settings):
             raise Exception("ngg could not be cross-compiled on MSVC <14")
 
     def configure_cmake(self):
