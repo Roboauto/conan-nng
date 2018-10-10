@@ -41,8 +41,8 @@ class NngConan(ConanFile):
 
     def configure(self):
         del self.settings.compiler.libcxx
-        if self.settings.compiler and float(self.settings.compiler.version.value) < 14:
-            raise Exception("ngg could not be cross-compiled on MSVC <14")
+        if self.settings.compiler == "Visual Studio" and float(self.settings.compiler.version.value) < 14:
+            raise Exception("ngg could be built by MSVC <14")
 
     def configure_cmake(self):
         cmake = CMake(self)
