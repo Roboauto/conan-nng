@@ -7,8 +7,9 @@ import os
 
 class NngConan(ConanFile):
     name = "nng"
-    version = "1.0.1"
-    url="https://github.com/gavinNL/conan-nng"
+    version = "1.1.1"
+    sha = "7eaccabfef35774b13da215a53736d3b7956a592"
+    url = "https://github.com/gavinNL/conan-nng"
     description = "a socket library that provides several common communication patterns"
     license = "MIT"
     exports = ["LICENSE.md"]
@@ -32,11 +33,8 @@ class NngConan(ConanFile):
     )
 
     def source(self):
-        source_url = "https://github.com/nanomsg/nng"
-        tools.get("{0}/archive/v{1}.tar.gz".format(source_url, self.version))
-        extracted_dir = self.name + "-" + self.version
-        os.rename(extracted_dir, self.source_subfolder)
-        #Rename to "sources" is a convention to simplify later steps
+        self.run("git clone https://github.com/nanomsg/nng.git " + self.source_subfolder)
+        self.run("cd %s && git checkout %s" % (self.source_subfolder, self.sha))
 
     def build(self):
         cmake = CMake(self)
